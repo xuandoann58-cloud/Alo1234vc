@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>alo1234vc</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 20px; max-width: 900px; }
+    h1 { color: #0a64a4; }
+    section { border: 1px solid #ddd; padding: 16px; margin-bottom: 16px; border-radius: 6px; }
+    input, button, select, textarea { margin-top: 6px; display:block; width:100%; max-width:420px; }
+    label { margin-top: 8px; font-weight:600; }
+    .small { width: auto; display:inline-block; margin-right:8px; }
+    pre { background:#f7f7f7;padding:8px;border-radius:4px;overflow:auto; }
+  </style>
+</head>
+<body>
+  <h1>alo1234vc</h1>
+  <p>Demo: upload, download, API và quản lý API key (admin).</p>
+
+  <section id="public-download">
+    <h2>Tải xuống (public)</h2>
+    <button id="refresh-files">Lấy danh sách file</button>
+    <ul id="file-list"></ul>
+  </section>
+
+  <section id="upload-section">
+    <h2>Tải lên (yêu cầu API key với quyền "upload")</h2>
+    <label>API key (x-api-key header)</label>
+    <input id="upload-key" placeholder="Nhập API key..." />
+    <label>Chọn file tải lên</label>
+    <input id="file-input" type="file" />
+    <button id="upload-btn">Tải lên</button>
+    <div id="upload-result"></div>
+  </section>
+
+  <section id="api-demo">
+    <h2>API demo (yêu cầu API key có quyền 'read:data')</h2>
+    <label>API key</label>
+    <input id="api-key" placeholder="Nhập API key..." />
+    <button id="call-api">Gọi /api/data</button>
+    <pre id="api-result">{}</pre>
+  </section>
+
+  <section id="admin-section">
+    <h2>Admin — quản lý API keys</h2>
+    <label>Mật khẩu admin (x-admin-password)</label>
+    <input id="admin-pass" placeholder="Mật khẩu admin..." />
+    <label>Quyền (chọn nhiều bằng Ctrl/Cmd)</label>
+    <select id="permissions" multiple>
+      <option value="read:data">read:data</option>
+      <option value="upload">upload</option>
+      <option value="download">download</option>
+      <option value="admin">admin</option>
+    </select>
+    <button id="create-key">Tạo API key</button>
+    <div>
+      <h3>Key mới</h3>
+      <pre id="new-key"></pre>
+    </div>
+
+    <div style="margin-top:12px;">
+      <button id="list-keys">Liệt kê keys</button>
+      <pre id="keys-list"></pre>
+    </div>
+  </section>
+
+  <script>
+    const apiBase = '';
+
+    async function refreshFiles() {
+      const res = await fetch(apiBase + '/files');
+      const files = await res.json();
+      const ul = document.getElementById('file-list');
+      ul.innerHTML = '';
+      files.forEach(f => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '/download/' + encodeURIComponent(f);
+        a.textContent = f;
+        a.target = '_blank';
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+    }
+
+    document.getElementById('refresh-files').addEventListener('click', refreshFiles);
+    refreshFiles();
+
+    document.getElementById('upload-btn').addEventListener('click', async () => {
+      const key = document.getElementById('upload-key').value.trim();
+      const fileInput = document.getElementById('file-input');
+      if (!fileInput.files.length) { alert('Chọn file'); return; }
+      const fd = new FormData();
+      fd.append('file', fileInput.files[0]);
+      const res = await fetch(apiBase + '/upload', {
+        method: 'POST',
+        headers: { 'x-api-key': key },
+        body: fd
+      });
+      const txt = await res.text();
+      document.getElementById('upload-result').textContent = res.status + ' — ' + txt;
+      if (res.ok) refreshFiles();
+    });
+
+    document.getElementById('call-api').addEventListener('click', async () => {
+      const key = document.getElementById('api-key').value.trim();
+      const res = await fetch(apiBase + '/api/data', {
+        headers: { 'x-api-key': key }
+      });
+      const json = await res.json();
+      document.getElementById('api-result').textContent = JSON.stringify(json, null, 2);
+    });
+
+    document.getElementById('create-key').addEventListener('click', async () => {
+      const pass = document.getElementById('admin-pass').value;
+      const permEl = document.getElementById('permissions');
+      const perms = Array.from(permEl.selectedOptions).map(o => o.value);
+      const res = await fetch(apiBase + '/admin/keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': pass },
+        body: JSON.stringify({ permissions: perms })
+      });
+      const txt = await res.text();
+      document.getElementById('new-key').textContent = res.status + ' — ' + txt;
+    });
+
+    document.getElementById('list-keys').addEventListener('click', async () => {
+      const pass = document.getElementById('admin-pass').value;
+      const res = await fetch(apiBase + '/admin/keys', {
+        headers: { 'x-admin-password': pass }
+      });
+      const txt = await res.text();
+      document.getElementById('keys-list').textContent = txt;
+    });
+  </script>
+</body>
+</html>
