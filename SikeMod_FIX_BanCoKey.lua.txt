@@ -693,8 +693,8 @@ end
 -- =============================================
 -- KEY SYSTEM - SikeMod (Key: SIKEMOD-119)
 -- =============================================
-local SikeKey = "SIKEMOD-119"
-local SikeLink = "https://link4m.net/PNGd2 "
+local haunguKey = "SIKEMOD-119"
+local giangocLink = "https://link4m.net/PNGd2 "
 
 -- ⚙ CẤU HÌNH:  true  = phải nhập KEY mới vào được menu
 --              false = BẢN DEMO: vào thẳng menu, KHÔNG hiện key system
@@ -761,7 +761,7 @@ local function ShowKeyUI()
     local Title = Instance.new("TextLabel", MainCard)
     Title.Size = UDim2.new(1,0,0,40)
     Title.BackgroundTransparency = 1
-    Title.Text = "SIKE MOD"
+    Title.Text = "Hậu ngu  MOD"
     Title.TextColor3 = Color3.fromRGB(255,255,255)
     Title.Font = Enum.Font.GothamBlack
     Title.TextSize = 24
@@ -823,7 +823,7 @@ local function ShowKeyUI()
     local function TryKey()
         if KeyChecking then return end
         -- bỏ khoảng trắng thừa + không phân biệt hoa/thường
-        if Box.Text:gsub("%s+", ""):lower() == SikeKey:lower() then
+        if Box.Text:gsub("%s+", ""):lower() =Key:lower() then
             KeyChecking = true
             Status.Text = "✅ Key hợp lệ! Đang tải..."
             Status.TextColor3 = Color3.fromRGB(80,255,100)
@@ -865,7 +865,7 @@ function LoadMainUI() -- gán vào "local LoadMainUI" khai báo ở trên (fix t
     end
     
     -- Code gốc của bạn chạy tiếp ở đây (Window, Tabs...)
-local Window = Fluent:CreateWindow({Title = "SikeMod",SubTitle = "| By: SikeMod (Made by Sike A P B O)",TabWidth = 155,Size = UDim2.fromOffset(555, 320),Acrylic = false,Theme = "Dark",MinimizeKey = Enum.KeyCode.End})
+local Window = Fluent:CreateWindow({Title = "SikeMod",SubTitle = "| By: Hậu là bố đây  (Made by hậu ngu à  A P B O)",TabWidth = 155,Size = UDim2.fromOffset(555, 320),Acrylic = false,Theme = "Dark",MinimizeKey = Enum.KeyCode.End})
 
 local CoreGui = game:GetService("CoreGui")
 local VirtualInputManager = game:GetService("VirtualInputManager")
